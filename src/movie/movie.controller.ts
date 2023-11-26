@@ -10,7 +10,6 @@ import {
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { DeleteMovieDto } from './dto/delete-movie.dto';
 
 @Controller('movie')
 export class MovieController {
@@ -36,8 +35,8 @@ export class MovieController {
     return this.movieService.update(_id, updateMovieDto);
   }
 
-  @Delete()
-  remove(@Body() deleteMovieDto: DeleteMovieDto) {
-    return this.movieService.remove(deleteMovieDto);
+  @Delete(':_id')
+  remove(@Param('_id') _id: string) {
+    return this.movieService.remove(_id);
   }
 }

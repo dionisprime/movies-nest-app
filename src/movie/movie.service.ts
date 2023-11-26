@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Movie, MovieDocument } from './movie.schema';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { DeleteMovieDto } from './dto/delete-movie.dto';
+import { ERROR_MESSAGE } from '../../utils/constants';
 
 @Injectable()
 export class MovieService {
@@ -21,15 +21,19 @@ export class MovieService {
     return this.movieModel.find().exec();
   }
 
-  findOne(_id: string) {
-    return this.movieModel.findById(_id).exec();
+  async findOne(_id: string): Promise<Movie> {
+    const movie = await this.movieModel.findById(_id).exec();
+    if (!movie) {
+      throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
+    }
+    return movie;
   }
 
   async update(_id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
     const existingMovie = await this.movieModel.findById(_id);
 
     if (!existingMovie) {
-      throw new NotFoundException(`Movie with ID ${_id} not found`);
+      throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
     }
 
     existingMovie.set(updateMovieDto);
@@ -37,12 +41,11 @@ export class MovieService {
     return existingMovie.save();
   }
 
-  async remove(deleteMovieDto: DeleteMovieDto): Promise<Movie> {
-    const deleteMovieId = deleteMovieDto._id;
-    const deletedMovie = await this.movieModel.findByIdAndDelete(deleteMovieId);
+  async remove(_id: string): Promise<Movie> {
+    const deletedMovie = await this.movieModel.findByIdAndDelete(_id);
 
     if (!deletedMovie) {
-      throw new NotFoundException(`Movie with ID ${deleteMovieId} not found`);
+      throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
     }
 
     return deletedMovie;
