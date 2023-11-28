@@ -4,6 +4,8 @@ export enum ERROR_MESSAGE {
   PROFILE_NOT_FOUND = 'Профиль не найден.',
   AN_ERROR_OCCURRED = 'Произошла ошибка!',
 
+  INVALID_CREDENTIALS = 'Неверные учетные данные',
+
   MOVIE_NOT_FOUND = 'Фильм не найден',
 
   GENRE_NOT_FOUND = 'Жанр не найден',
@@ -14,3 +16,8 @@ export enum ERROR_MESSAGE {
 }
 
 export enum MESSAGE {}
+
+export enum ROLES {
+  ADMIN = 'admin',
+  USER = 'user',
+}

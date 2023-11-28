@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
@@ -13,6 +17,20 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
+  }
+
+  async authenticate(email: string, password: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const isPasswordValid = user.password === password;
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
+    }
+    return `${email} ${password}`;
   }
 
   async findAll(): Promise<User[]> {
