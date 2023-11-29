@@ -30,7 +30,17 @@ export class UserService {
     if (!isPasswordValid) {
       throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
     }
-    return `${email} ${password}`;
+    return user;
+  }
+
+  async isAuth(authorizationHeader: string) {
+    if (!authorizationHeader) {
+      throw new UnauthorizedException(ERROR_MESSAGE.AUTH_HEADER_MISSING);
+    }
+    const [email, password] = authorizationHeader.split(' ');
+
+    const user = await this.authenticate(email, password);
+    return user;
   }
 
   async findAll(): Promise<User[]> {

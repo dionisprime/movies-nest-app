@@ -13,6 +13,8 @@ export enum ERROR_MESSAGE {
   DIRECTOR_NOT_FOUND = 'Режиссер не найден',
 
   USER_NOT_FOUND = 'Пользователь не найден',
+
+  AUTH_HEADER_MISSING = 'Authorization header отсутствует',
 }
 
 export enum MESSAGE {}

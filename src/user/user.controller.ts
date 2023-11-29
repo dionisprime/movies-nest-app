@@ -28,7 +28,7 @@ export class UserController {
     @Body('password') password: string,
   ) {
     const user = await this.userService.authenticate(email, password);
-    return user;
+    return `${user.email} ${user.password}`;
   }
 
   @Get()
