@@ -11,13 +11,13 @@ import {
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('movie')
 export class MovieController {
   constructor(
     private readonly movieService: MovieService,
-    private readonly userService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post()
@@ -25,7 +25,7 @@ export class MovieController {
     @Body() createMovieDto: CreateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.userService.isAuth(authorizationHeader);
+    await this.authService.isAuth(authorizationHeader);
     return this.movieService.create(createMovieDto);
   }
 
@@ -45,7 +45,7 @@ export class MovieController {
     @Body() updateMovieDto: UpdateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.userService.isAuth(authorizationHeader);
+    await this.authService.isAuth(authorizationHeader);
     return this.movieService.update(_id, updateMovieDto);
   }
 
@@ -54,7 +54,7 @@ export class MovieController {
     @Param('_id') _id: string,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.userService.isAuth(authorizationHeader);
+    await this.authService.isAuth(authorizationHeader);
     return this.movieService.remove(_id);
   }
 }
