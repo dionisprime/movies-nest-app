@@ -6,18 +6,35 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const token = await this.authService.generateToken(createUserDto.email);
+    console.log('createUserDto.email: ', createUserDto.email);
+    return this.userService.create(createUserDto, token);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/me')
+  me(@Req() req: Request) {
+    const { user } = req;
+    return user;
   }
 
   @Get()

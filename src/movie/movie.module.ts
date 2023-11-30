@@ -6,6 +6,8 @@ import { Movie, MovieSchema } from './movie.schema';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthController } from 'src/auth/auth.controller';
 import { User, UserSchema } from 'src/user/user.schema';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -15,6 +17,6 @@ import { User, UserSchema } from 'src/user/user.schema';
     ]),
   ],
   controllers: [MovieController, AuthController],
-  providers: [MovieService, AuthService],
+  providers: [MovieService, AuthService, JwtService, ConfigService],
 })
 export class MovieModule {}

@@ -7,10 +7,27 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
 import { ERROR_MESSAGE } from '../../utils/constants';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
+
+  async generateToken(email: string) {
+    const secret = this.configService.get<string>('JWT_SECRET');
+
+    if (!secret) {
+      throw new UnauthorizedException('JWT secret is not configured');
+    }
+
+    const token = this.jwtService.sign({ email }, { secret });
+    return token;
+  }
 
   async authenticate(email: string, password: string) {
     const user = await this.userModel.findOne({ email }).exec();
