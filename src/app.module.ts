@@ -8,6 +8,13 @@ import { DirectorModule } from './director/director.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtGuard } from './auth/guards/jwt.guard';
+
+const globalGuard = {
+  provide: APP_GUARD,
+  useClass: JwtGuard,
+};
 
 @Module({
   imports: [
@@ -20,6 +27,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, globalGuard],
 })
 export class AppModule {}

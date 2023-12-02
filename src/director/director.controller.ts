@@ -10,6 +10,7 @@ import {
 import { DirectorService } from './director.service';
 import { CreateDirectorDto } from './dto/create-director.dto';
 import { UpdateDirectorDto } from './dto/update-director.dto';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('director')
 export class DirectorController {
@@ -20,6 +21,7 @@ export class DirectorController {
     return this.directorService.create(createDirectorDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.directorService.findAll();

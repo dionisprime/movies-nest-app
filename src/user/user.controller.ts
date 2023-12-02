@@ -6,15 +6,14 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthService } from 'src/auth/auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('user')
 export class UserController {
@@ -23,6 +22,7 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const token = await this.authService.generateToken(createUserDto.email);
@@ -30,7 +30,6 @@ export class UserController {
     return this.userService.create(createUserDto, token);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   me(@Req() req: Request) {
     const { user } = req;

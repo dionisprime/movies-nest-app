@@ -12,6 +12,7 @@ import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('movie')
 export class MovieController {
@@ -29,6 +30,7 @@ export class MovieController {
     return this.movieService.create(createMovieDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.movieService.findAll();
