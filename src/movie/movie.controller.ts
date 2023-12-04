@@ -11,7 +11,7 @@ import {
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 
 @Controller('movie')
@@ -26,15 +26,18 @@ export class MovieController {
     @Body() createMovieDto: CreateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    console.log('authorizationHeader: ', authorizationHeader);
     await this.authService.isAdmin(authorizationHeader);
     return this.movieService.create(createMovieDto);
   }
 
   @Public()
   @Get()
-  findAll() {
-    return this.movieService.findAll();
+  findAll(@Headers('Authorization') authorizationHeader: string) {
+    if (authorizationHeader) {
+      return this.movieService.findAll();
+    } else {
+      return this.movieService.findNamesOnly();
+    }
   }
 
   @Get(':_id')
@@ -48,7 +51,7 @@ export class MovieController {
     @Body() updateMovieDto: UpdateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.authService.isAuth(authorizationHeader);
+    await this.authService.isAdmin(authorizationHeader);
     return this.movieService.update(_id, updateMovieDto);
   }
 

@@ -6,25 +6,38 @@ import {
   Patch,
   Param,
   Delete,
+  Headers,
 } from '@nestjs/common';
 import { GenreService } from './genre.service';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
+import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 
 @Controller('genre')
 export class GenreController {
-  constructor(private readonly genreService: GenreService) {}
+  constructor(
+    private readonly genreService: GenreService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
-  create(@Body() createGenreDto: CreateGenreDto) {
+  async create(
+    @Body() createGenreDto: CreateGenreDto,
+    @Headers('Authorization') authorizationHeader: string,
+  ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.genreService.create(createGenreDto);
   }
 
   @Public()
   @Get()
-  findAll() {
-    return this.genreService.findAll();
+  findAll(@Headers('Authorization') authorizationHeader: string) {
+    if (authorizationHeader) {
+      return this.genreService.findAll();
+    } else {
+      return this.genreService.findNamesOnly();
+    }
   }
 
   @Get(':_id')
@@ -33,12 +46,21 @@ export class GenreController {
   }
 
   @Patch(':_id')
-  update(@Param('_id') _id: string, @Body() updateGenreDto: UpdateGenreDto) {
+  async update(
+    @Param('_id') _id: string,
+    @Body() updateGenreDto: UpdateGenreDto,
+    @Headers('Authorization') authorizationHeader: string,
+  ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.genreService.update(_id, updateGenreDto);
   }
 
   @Delete(':_id')
-  remove(@Param('_id') _id: string) {
+  async remove(
+    @Param('_id') _id: string,
+    @Headers('Authorization') authorizationHeader: string,
+  ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.genreService.remove(_id);
   }
 }

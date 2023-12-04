@@ -6,18 +6,27 @@ import {
   Patch,
   Param,
   Delete,
+  Headers,
 } from '@nestjs/common';
 import { DirectorService } from './director.service';
 import { CreateDirectorDto } from './dto/create-director.dto';
 import { UpdateDirectorDto } from './dto/update-director.dto';
+import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 
 @Controller('director')
 export class DirectorController {
-  constructor(private readonly directorService: DirectorService) {}
+  constructor(
+    private readonly directorService: DirectorService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
-  create(@Body() createDirectorDto: CreateDirectorDto) {
+  async create(
+    @Body() createDirectorDto: CreateDirectorDto,
+    @Headers('Authorization') authorizationHeader: string,
+  ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.directorService.create(createDirectorDto);
   }
 
@@ -33,15 +42,21 @@ export class DirectorController {
   }
 
   @Patch(':_id')
-  update(
+  async update(
     @Param('_id') _id: string,
     @Body() updateDirectorDto: UpdateDirectorDto,
+    @Headers('Authorization') authorizationHeader: string,
   ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.directorService.update(_id, updateDirectorDto);
   }
 
   @Delete(':_id')
-  remove(@Param('_id') _id: string) {
+  async remove(
+    @Param('_id') _id: string,
+    @Headers('Authorization') authorizationHeader: string,
+  ) {
+    await this.authService.isAdmin(authorizationHeader);
     return this.directorService.remove(_id);
   }
 }

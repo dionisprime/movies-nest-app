@@ -21,6 +21,10 @@ export class GenreService {
     return this.genreModel.find().exec();
   }
 
+  findNamesOnly() {
+    return this.genreModel.find({}, 'genreName -_id').exec();
+  }
+
   async findOne(_id: string): Promise<Genre> {
     const genre = await this.genreModel.findById(_id).exec();
     if (!genre) {

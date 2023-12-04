@@ -11,6 +11,7 @@ export class PlaylistService {
   constructor(
     @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
   ) {}
+
   async create(createPlaylistDto: CreatePlaylistDto): Promise<Playlist> {
     const createdPlaylist = new this.playlistModel(createPlaylistDto);
     return createdPlaylist.save();
@@ -18,6 +19,12 @@ export class PlaylistService {
 
   async findAll(): Promise<Playlist[]> {
     return this.playlistModel.find().exec();
+  }
+
+  async findAllPublic(): Promise<Playlist[]> {
+    return this.playlistModel
+      .find({ isPrivate: false })
+      .populate('movies', 'title');
   }
 
   async findOne(id: string): Promise<Playlist> {

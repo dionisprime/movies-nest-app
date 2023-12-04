@@ -10,6 +10,7 @@ import {
 import { PlaylistService } from './playlist.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('playlist')
 export class PlaylistController {
@@ -20,10 +21,16 @@ export class PlaylistController {
     return this.playlistService.create(createPlaylistDto);
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.playlistService.findAll();
+  findAllPublic() {
+    return this.playlistService.findAllPublic();
   }
+
+  // @Get()
+  // findAll() {
+  //   return this.playlistService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

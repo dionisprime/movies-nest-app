@@ -21,6 +21,10 @@ export class MovieService {
     return this.movieModel.find().exec();
   }
 
+  findNamesOnly() {
+    return this.movieModel.find({}, 'title -_id').exec();
+  }
+
   async findOne(_id: string): Promise<Movie> {
     const movie = await this.movieModel.findById(_id).exec();
     if (!movie) {

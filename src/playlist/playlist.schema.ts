@@ -10,8 +10,10 @@ export class Playlist {
   @Prop({ required: true })
   playlistName: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }] })
-  movies: Movie[];
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }],
+  })
+  movies: Movie;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   createdBy: User;
