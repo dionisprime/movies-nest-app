@@ -8,7 +8,7 @@ export class Director {
   @Prop({ required: true })
   directorName: string;
 
-  @Prop()
+  @Prop({ required: true })
   dateOfBirth: Date;
 }
 

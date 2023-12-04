@@ -2,11 +2,12 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
-import { ERROR_MESSAGE } from '../../utils/constants';
+import { ERROR_MESSAGE, ROLES } from '../../utils/constants';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -47,9 +48,31 @@ export class AuthService {
     if (!authorizationHeader) {
       throw new UnauthorizedException(ERROR_MESSAGE.AUTH_HEADER_MISSING);
     }
-    const [email, password] = authorizationHeader.split(' ');
 
-    const user = await this.authenticate(email, password);
+    const jwtToken = authorizationHeader.split(' ')[1];
+
+    const user = await this.userModel.findOne({ token: jwtToken }).exec();
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const email = user?.email;
+    const password = user?.password;
+    await this.authenticate(email, password);
+
     return user;
+  }
+
+  async isAdmin(authorizationHeader: string) {
+    if (!authorizationHeader) {
+      throw new UnauthorizedException(ERROR_MESSAGE.AUTH_HEADER_MISSING);
+    }
+
+    const user = await this.isAuth(authorizationHeader);
+
+    const isAdmin = user?.roles.includes(ROLES.ADMIN);
+    if (!isAdmin) {
+      throw new ForbiddenException(ERROR_MESSAGE.NOT_ADMIN);
+    }
   }
 }

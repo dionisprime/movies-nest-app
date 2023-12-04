@@ -3,6 +3,6 @@ export class CreateMovieDto {
   description?: string;
   year: number;
   duration: number;
-  // genre?: string[];
+  genre?: string[];
   director?: string;
 }

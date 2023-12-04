@@ -15,6 +15,11 @@ export enum ERROR_MESSAGE {
   USER_NOT_FOUND = 'Пользователь не найден',
 
   AUTH_HEADER_MISSING = 'Authorization header отсутствует',
+  NOT_ADMIN = 'Доступ только для админа!',
+
+  PLAYLIST_NOT_FOUND = 'Плейлист не найден',
+
+  USER_ALREADY_EXIST = 'Пользователь с этим адресом электронной почты уже существует',
 }
 
 export enum MESSAGE {}

@@ -26,7 +26,8 @@ export class MovieController {
     @Body() createMovieDto: CreateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.authService.isAuth(authorizationHeader);
+    console.log('authorizationHeader: ', authorizationHeader);
+    await this.authService.isAdmin(authorizationHeader);
     return this.movieService.create(createMovieDto);
   }
 
@@ -56,7 +57,7 @@ export class MovieController {
     @Param('_id') _id: string,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.authService.isAuth(authorizationHeader);
+    await this.authService.isAdmin(authorizationHeader);
     return this.movieService.remove(_id);
   }
 }
