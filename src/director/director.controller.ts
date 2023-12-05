@@ -8,51 +8,47 @@ import {
   Delete,
   Headers,
 } from '@nestjs/common';
-import { MovieService } from './movie.service';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { UpdateMovieDto } from './dto/update-movie.dto';
+import { DirectorService } from './director.service';
+import { CreateDirectorDto } from './dto/create-director.dto';
+import { UpdateDirectorDto } from './dto/update-director.dto';
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 
-@Controller('movie')
-export class MovieController {
+@Controller('director')
+export class DirectorController {
   constructor(
-    private readonly movieService: MovieService,
+    private readonly directorService: DirectorService,
     private readonly authService: AuthService,
   ) {}
 
   @Post()
   async create(
-    @Body() createMovieDto: CreateMovieDto,
+    @Body() createDirectorDto: CreateDirectorDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
     await this.authService.isAdmin(authorizationHeader);
-    return this.movieService.create(createMovieDto);
+    return this.directorService.create(createDirectorDto);
   }
 
   @Public()
   @Get()
-  findAll(@Headers('Authorization') authorizationHeader: string) {
-    if (authorizationHeader) {
-      return this.movieService.findAll();
-    } else {
-      return this.movieService.findNamesOnly();
-    }
+  findAll() {
+    return this.directorService.findAll();
   }
 
   @Get(':_id')
   findOne(@Param('_id') _id: string) {
-    return this.movieService.findOne(_id);
+    return this.directorService.findOne(_id);
   }
 
   @Patch(':_id')
   async update(
     @Param('_id') _id: string,
-    @Body() updateMovieDto: UpdateMovieDto,
+    @Body() updateDirectorDto: UpdateDirectorDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
     await this.authService.isAdmin(authorizationHeader);
-    return this.movieService.update(_id, updateMovieDto);
+    return this.directorService.update(_id, updateDirectorDto);
   }
 
   @Delete(':_id')
@@ -61,6 +57,6 @@ export class MovieController {
     @Headers('Authorization') authorizationHeader: string,
   ) {
     await this.authService.isAdmin(authorizationHeader);
-    return this.movieService.remove(_id);
+    return this.directorService.remove(_id);
   }
 }
