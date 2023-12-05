@@ -13,7 +13,10 @@ import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('genre')
+@ApiBearerAuth()
 @Controller('genre')
 export class GenreController {
   constructor(

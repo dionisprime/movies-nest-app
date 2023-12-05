@@ -18,7 +18,7 @@ export class MovieService {
   }
 
   async findAll(): Promise<Movie[]> {
-    return this.movieModel.find().exec();
+    return this.movieModel.find().populate('genre').populate('director').exec();
   }
 
   findNamesOnly() {

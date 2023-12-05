@@ -13,7 +13,10 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('movie')
+@ApiBearerAuth()
 @Controller('movie')
 export class MovieController {
   constructor(
@@ -26,6 +29,7 @@ export class MovieController {
     @Body() createMovieDto: CreateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
+    console.log('authorizationHeader: ', authorizationHeader);
     await this.authService.isAdmin(authorizationHeader);
     return this.movieService.create(createMovieDto);
   }
@@ -34,8 +38,10 @@ export class MovieController {
   @Get()
   findAll(@Headers('Authorization') authorizationHeader: string) {
     if (authorizationHeader) {
+      console.log('authorizationHeader: ', authorizationHeader);
       return this.movieService.findAll();
     } else {
+      console.log('authorizationHeader: ', authorizationHeader);
       return this.movieService.findNamesOnly();
     }
   }
