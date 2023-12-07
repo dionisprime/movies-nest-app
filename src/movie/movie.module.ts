@@ -8,12 +8,14 @@ import { AuthController } from 'src/auth/auth.controller';
 import { User, UserSchema } from 'src/user/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Movie.name, schema: MovieSchema },
       { name: User.name, schema: UserSchema },
+      { name: Playlist.name, schema: PlaylistSchema },
     ]),
   ],
   controllers: [MovieController, AuthController],

@@ -35,6 +35,7 @@ export class UserController {
   @Get('/me')
   me(@Req() req: Request) {
     const { user } = req;
+    console.log('user: ', user);
     return user;
   }
 

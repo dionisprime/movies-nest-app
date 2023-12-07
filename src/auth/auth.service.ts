@@ -10,10 +10,12 @@ import { User, UserDocument } from '../user/user.schema';
 import { ERROR_MESSAGE, ROLES } from '../../utils/constants';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Playlist, PlaylistDocument } from '../playlist/playlist.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -74,5 +76,26 @@ export class AuthService {
     if (!isAdmin) {
       throw new ForbiddenException(ERROR_MESSAGE.NOT_ADMIN);
     }
+    return isAdmin;
+  }
+
+  async isOwner(_id: string, user: UserDocument) {
+    const userFromToken = user;
+
+    const playlist = await this.playlistModel.findById(_id).exec();
+    if (!playlist) {
+      throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_FOUND);
+    }
+
+    const userPlaylistOwner = await this.userModel
+      .findById(playlist?.createdBy)
+      .exec();
+
+    const isPlaylistOwner = userFromToken?.email === userPlaylistOwner?.email;
+
+    if (!isPlaylistOwner) {
+      throw new ForbiddenException(ERROR_MESSAGE.NO_PERMISSIONS);
+    }
+    return isPlaylistOwner;
   }
 }

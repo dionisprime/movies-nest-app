@@ -7,11 +7,14 @@ import { AuthService } from 'src/auth/auth.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Director.name, schema: DirectorSchema },
       { name: User.name, schema: UserSchema },
+      { name: Playlist.name, schema: PlaylistSchema },
     ]),
   ],
   controllers: [DirectorController],

@@ -9,11 +9,15 @@ import { UserService } from 'src/user/user.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Playlist.name, schema: PlaylistSchema },
+    ]),
     UserModule,
     PassportModule,
     JwtModule,

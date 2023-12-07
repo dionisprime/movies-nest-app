@@ -6,12 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  Headers,
 } from '@nestjs/common';
 import { PlaylistService } from './playlist.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { Public } from 'src/decorators/public.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+import { UserDocument } from 'src/user/user.schema';
 
 @ApiTags('playlist')
 @ApiBearerAuth()
@@ -20,14 +24,21 @@ export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
   @Post()
+  //возможно стоит брать id юзера из токена для подстановки в createdBy
   create(@Body() createPlaylistDto: CreatePlaylistDto) {
     return this.playlistService.create(createPlaylistDto);
   }
 
   @Public()
   @Get()
-  findAllPublic() {
-    return this.playlistService.findAllPublic();
+  findAll(@Headers('Authorization') authorizationHeader: string) {
+    if (authorizationHeader) {
+      console.log('authorizationHeader: ', authorizationHeader);
+      return this.playlistService.findAll(authorizationHeader);
+    } else {
+      console.log('authorizationHeader: ', authorizationHeader);
+      return this.playlistService.findAllPublic();
+    }
   }
 
   // @Get()
@@ -36,20 +47,42 @@ export class PlaylistController {
   // }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.playlistService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserDocument },
+  ) {
+    const { user } = req;
+    return this.playlistService.findOne(id, user);
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
+    @Req() req: Request & { user: UserDocument },
     @Body() updatePlaylistDto: UpdatePlaylistDto,
   ) {
-    return this.playlistService.update(id, updatePlaylistDto);
+    const { user } = req;
+    return this.playlistService.update(id, user, updatePlaylistDto);
+  }
+
+  @Post(':id')
+  addMovie(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserDocument },
+    @Body() body: { movie: string },
+  ) {
+    const { user } = req;
+    const { movie } = body;
+    // console.log('movie: ', movie);
+    return this.playlistService.addMovie(id, user, movie);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.playlistService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserDocument },
+  ) {
+    const { user } = req;
+    return this.playlistService.remove(id, user);
   }
 }
