@@ -23,7 +23,8 @@ export class User {
   token: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }] })
-  playlists: Playlist[];
+  playlists: string[];
+  // playlists: Playlist[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

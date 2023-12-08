@@ -75,6 +75,33 @@ export class PlaylistService {
     return playlist;
   }
 
+  async copyPlaylist(
+    playlistId: string,
+    user: UserDocument,
+  ): Promise<Playlist> {
+    const playlistToCopy = await this.playlistModel.findById(playlistId);
+    if (!playlistToCopy || playlistToCopy.isPrivate) {
+      throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_AVAILABLE);
+    }
+    console.log('playlistToCopy: ', playlistToCopy._id);
+    console.log('user: ', user);
+    console.log(
+      'user.playlists: ',
+      user.playlists.includes(playlistToCopy._id.toString()),
+    );
+    const playListId = playlistToCopy._id.toString();
+    if (user.playlists.includes(playListId)) {
+      throw new ConflictException(ERROR_MESSAGE.PLAYLIST_EXIST);
+    }
+    // user.playlists.push(playlistToCopy);
+    user.playlists.push(playListId);
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { playlists: user.playlists },
+    );
+    return playlistToCopy;
+  }
+
   async update(
     playlistId: string,
     user: UserDocument,
@@ -101,7 +128,10 @@ export class PlaylistService {
     if (!playlistToUpdate) {
       throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_FOUND);
     }
-    if (playlistToUpdate.movies.includes(movieId)) {
+
+    const movieAlreadyExist = playlistToUpdate.movies.includes(movieId);
+
+    if (movieAlreadyExist) {
       throw new ConflictException(ERROR_MESSAGE.MOVIE_EXIST);
     }
     playlistToUpdate.movies.push(movieId);

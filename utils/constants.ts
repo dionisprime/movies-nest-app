@@ -18,7 +18,9 @@ export enum ERROR_MESSAGE {
   NOT_ADMIN = 'Доступ только для админа!',
 
   PLAYLIST_NOT_FOUND = 'Плейлист не найден',
+  PLAYLIST_NOT_AVAILABLE = 'Плейлист не доступен',
   MOVIE_EXIST = 'Фильм уже присутствует в списке',
+  PLAYLIST_EXIST = 'Плейлист уже присутствует в списке',
 
   NO_PERMISSIONS = 'У Вас нет прав на выполнение этого действия',
 

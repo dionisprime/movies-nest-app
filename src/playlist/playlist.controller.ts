@@ -29,6 +29,15 @@ export class PlaylistController {
     return this.playlistService.create(createPlaylistDto);
   }
 
+  @Post(':id/copy')
+  copyPlaylist(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserDocument },
+  ) {
+    const { user } = req;
+    return this.playlistService.copyPlaylist(id, user);
+  }
+
   @Public()
   @Get()
   findAll(@Headers('Authorization') authorizationHeader: string) {
