@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ROLES } from '../../utils/constants';
-import { Playlist } from '../playlist/playlist.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -24,7 +23,6 @@ export class User {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }] })
   playlists: string[];
-  // playlists: Playlist[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

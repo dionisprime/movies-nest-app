@@ -27,33 +27,17 @@ export class PlaylistService {
   }
 
   async findAll(authorizationHeader: string): Promise<Playlist[]> {
-    /**
-     * надо проверять если юзер из токена не является владельцем, то
-     * не отдавать приватные листы
-     * а если является то отдавать
-     */
-
-    // надо доставать юзера из базы по токену
     const userFromToken = await this.authService.isAuth(authorizationHeader);
-    // console.log('userFromToken: ', userFromToken);
 
-    // console.log('userFromToken._id: ', userFromToken._id);
-    // надо выдавать только те плейлисты которые создал юзер из токена
-    // const allPlaylists = await this.playlistModel.find({
-    //   createdBy: userFromToken._id,
-    // });
     const allPlaylists = await this.playlistModel
       .find({
         $or: [
-          { createdBy: userFromToken._id, isPrivate: true }, // Юзер является владельцем и это приватный список
-          { isPrivate: false }, // Это общий список
+          { createdBy: userFromToken._id, isPrivate: true },
+          { isPrivate: false },
         ],
       })
       .populate('movies', 'title')
       .populate('createdBy', 'username');
-    /**если пользователь является владельцем (владельцем приватного списка),
-     * ему будут показаны только его приватные списки и общие списки.
-     * Если пользователь не является владельцем, ему будут показаны только общие списки. */
 
     return allPlaylists;
   }
@@ -93,7 +77,6 @@ export class PlaylistService {
     if (user.playlists.includes(playListId)) {
       throw new ConflictException(ERROR_MESSAGE.PLAYLIST_EXIST);
     }
-    // user.playlists.push(playlistToCopy);
     user.playlists.push(playListId);
     await this.userModel.updateOne(
       { _id: user._id },
