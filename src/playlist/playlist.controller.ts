@@ -24,7 +24,7 @@ export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
   @Post()
-  //возможно стоит брать id юзера из токена для подстановки в createdBy
+  //TODO возможно стоит брать id юзера из токена для подстановки в createdBy
   create(@Body() createPlaylistDto: CreatePlaylistDto) {
     return this.playlistService.create(createPlaylistDto);
   }
@@ -40,11 +40,6 @@ export class PlaylistController {
       return this.playlistService.findAllPublic();
     }
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.playlistService.findAll();
-  // }
 
   @Get(':id')
   findOne(
@@ -73,7 +68,6 @@ export class PlaylistController {
   ) {
     const { user } = req;
     const { movie } = body;
-    // console.log('movie: ', movie);
     return this.playlistService.addMovie(id, user, movie);
   }
 

@@ -27,9 +27,6 @@ export class PlaylistService {
   }
 
   async findAll(authorizationHeader: string): Promise<Playlist[]> {
-    const token = authorizationHeader;
-
-    console.log('token: ', token);
     /**
      * надо проверять если юзер из токена не является владельцем, то
      * не отдавать приватные листы
@@ -42,57 +39,30 @@ export class PlaylistService {
 
     // console.log('userFromToken._id: ', userFromToken._id);
     // надо выдавать только те плейлисты которые создал юзер из токена
-    const allPlaylists = await this.playlistModel.find({
-      createdBy: userFromToken._id,
-    });
-
-    if (allPlaylists.length < 1) {
-      // то выводим только общие списки
-      return this.playlistModel
-        .find({ isPrivate: false })
-        .populate('movies', 'title');
-    }
+    // const allPlaylists = await this.playlistModel.find({
+    //   createdBy: userFromToken._id,
+    // });
+    const allPlaylists = await this.playlistModel
+      .find({
+        $or: [
+          { createdBy: userFromToken._id, isPrivate: true }, // Юзер является владельцем и это приватный список
+          { isPrivate: false }, // Это общий список
+        ],
+      })
+      .populate('movies', 'title')
+      .populate('createdBy', 'username');
+    /**если пользователь является владельцем (владельцем приватного списка),
+     * ему будут показаны только его приватные списки и общие списки.
+     * Если пользователь не является владельцем, ему будут показаны только общие списки. */
 
     return allPlaylists;
   }
-  //   return this.playlistModel
-  //     .find()
-  //     .populate('movies', 'title')
-  //     .populate('createdBy', 'username')
-  //     .exec();
-  // }
-
-  // async findPrivateLists(): Promise<Playlist[]> {
-  //   const isOwner = await this.authService.isOwner(id, user);
-  //   if (isOwner) {
-  //     return this.playlistModel.find({ isPrivate: true }).populate('movies');
-  //   }
-  //   return this.playlistModel.find().exec();
-  // }
-
-  // async findAll(): Promise<Playlist[]> {
-  //   const isOwner = await this.authService.isOwner(id, user);
-
-  //   if (isOwner) {
-  //     return this.playlistModel.find({}).populate('movies');
-  //   }
-
-  //   return this.playlistModel
-  //     .find({ isPrivate: false })
-  //     .populate('movies', 'title');
-  // }
-  // async findAll(): Promise<Movie[]> {
-  //   return this.movieModel
-  //     .find()
-  //     .populate('movie')
-  //     .populate('createdBy')
-  //     .exec();
-  // }
 
   async findAllPublic(): Promise<Playlist[]> {
     return this.playlistModel
       .find({ isPrivate: false })
-      .populate('movies', 'title');
+      .populate('movies', 'title')
+      .populate('createdBy', 'username');
   }
 
   async findOne(id: string, user?: UserDocument): Promise<Playlist | null> {
@@ -131,7 +101,6 @@ export class PlaylistService {
     if (!playlistToUpdate) {
       throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_FOUND);
     }
-    console.log('playlistToUpdate.movies: ', playlistToUpdate?.movies);
     if (playlistToUpdate.movies.includes(movieId)) {
       throw new ConflictException(ERROR_MESSAGE.MOVIE_EXIST);
     }
