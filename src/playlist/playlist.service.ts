@@ -76,7 +76,19 @@ export class PlaylistService {
       { _id: user._id },
       { playlists: user.playlists },
     );
+
+    playlistToCopy.entriesCount += 1;
+    await playlistToCopy.save();
+
     return playlistToCopy;
+  }
+
+  async findTopPlaylists(): Promise<Playlist[]> {
+    return this.playlistModel
+      .find()
+      .sort({ entriesCount: -1 })
+      .limit(50)
+      .exec();
   }
 
   async update(

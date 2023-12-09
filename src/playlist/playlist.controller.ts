@@ -39,13 +39,17 @@ export class PlaylistController {
   }
 
   @Public()
+  @Get('top')
+  findTopPlaylists() {
+    return this.playlistService.findTopPlaylists();
+  }
+
+  @Public()
   @Get()
   findAll(@Headers('Authorization') authorizationHeader: string) {
     if (authorizationHeader) {
-      console.log('authorizationHeader: ', authorizationHeader);
       return this.playlistService.findAll(authorizationHeader);
     } else {
-      console.log('authorizationHeader: ', authorizationHeader);
       return this.playlistService.findAllPublic();
     }
   }

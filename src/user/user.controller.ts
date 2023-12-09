@@ -35,7 +35,6 @@ export class UserController {
   @Get('/me')
   me(@Req() req: Request) {
     const { user } = req;
-    console.log('user: ', user);
     return user;
   }
 
@@ -52,6 +51,14 @@ export class UserController {
   @Patch(':_id')
   update(@Param('_id') _id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(_id, updateUserDto);
+  }
+
+  @Patch(':userId/playlists/:playlistId')
+  removePlaylistFromUser(
+    @Param('userId') userId: string,
+    @Param('playlistId') playlistId: string,
+  ) {
+    return this.userService.removePlaylistFromUser(userId, playlistId);
   }
 
   @Delete(':_id')

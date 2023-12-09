@@ -20,6 +20,9 @@ export class Playlist {
 
   @Prop({ default: true })
   isPrivate: boolean;
+
+  @Prop({ default: 0 })
+  entriesCount: number;
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);

@@ -29,7 +29,6 @@ export class MovieController {
     @Body() createMovieDto: CreateMovieDto,
     @Headers('Authorization') authorizationHeader: string,
   ) {
-    console.log('authorizationHeader: ', authorizationHeader);
     await this.authService.isAdmin(authorizationHeader);
     return this.movieService.create(createMovieDto);
   }
@@ -38,10 +37,8 @@ export class MovieController {
   @Get()
   findAll(@Headers('Authorization') authorizationHeader: string) {
     if (authorizationHeader) {
-      console.log('authorizationHeader: ', authorizationHeader);
       return this.movieService.findAll();
     } else {
-      console.log('authorizationHeader: ', authorizationHeader);
       return this.movieService.findNamesOnly();
     }
   }
