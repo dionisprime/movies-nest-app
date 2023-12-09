@@ -67,4 +67,8 @@ export class UserService {
     }
     return deletedUser;
   }
+
+  async countUsers() {
+    return this.userModel.countDocuments().exec();
+  }
 }

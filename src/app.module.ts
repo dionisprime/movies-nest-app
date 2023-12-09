@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { PlaylistModule } from './playlist/playlist.module';
+import { ReportModule } from './report/report.module';
 
 const globalGuard = {
   provide: APP_GUARD,
@@ -27,6 +28,7 @@ const globalGuard = {
     ConfigModule.forRoot(),
     AuthModule,
     PlaylistModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, globalGuard],

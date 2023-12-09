@@ -124,4 +124,8 @@ export class PlaylistService {
 
     return deletedPlaylist;
   }
+
+  async countPlaylists() {
+    return this.playlistModel.countDocuments().exec();
+  }
 }

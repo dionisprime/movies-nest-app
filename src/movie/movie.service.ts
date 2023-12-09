@@ -54,4 +54,8 @@ export class MovieService {
 
     return deletedMovie;
   }
+
+  async countMovies() {
+    return this.movieModel.countDocuments().exec();
+  }
 }
