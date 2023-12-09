@@ -67,12 +67,6 @@ export class PlaylistService {
     if (!playlistToCopy || playlistToCopy.isPrivate) {
       throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_AVAILABLE);
     }
-    console.log('playlistToCopy: ', playlistToCopy._id);
-    console.log('user: ', user);
-    console.log(
-      'user.playlists: ',
-      user.playlists.includes(playlistToCopy._id.toString()),
-    );
     const playListId = playlistToCopy._id.toString();
     if (user.playlists.includes(playListId)) {
       throw new ConflictException(ERROR_MESSAGE.PLAYLIST_EXIST);
