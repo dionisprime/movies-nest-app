@@ -12,6 +12,7 @@ import { User, UserSchema } from 'src/user/user.schema';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ConfigService } from '@nestjs/config';
     UserService,
     JwtService,
     ConfigService,
+    MailService,
   ],
 })
 export class ReportModule {}

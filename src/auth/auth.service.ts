@@ -11,6 +11,8 @@ import { ERROR_MESSAGE, ROLES } from '../../utils/constants';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Playlist, PlaylistDocument } from '../playlist/playlist.schema';
+import { UserService } from 'src/user/user.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,8 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private userService: UserService,
+    private mailService: MailService,
   ) {}
 
   async generateToken(email: string) {
@@ -97,5 +101,24 @@ export class AuthService {
       throw new ForbiddenException(ERROR_MESSAGE.NO_PERMISSIONS);
     }
     return isPlaylistOwner;
+  }
+
+  async sendMagicLink(email: string) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const clientUrl = this.configService.get('CLIENT_URL');
+    const link = `${clientUrl}/auth/${user.token}`;
+    const html = `<p><a href="${link}">Войти в аккаунт</a></p>`;
+
+    this.mailService.sendMessage({
+      email: user.email,
+      subject: 'Волшебная ссылка для входа',
+      html,
+    });
+    return `Ссылка отправлена на почту ${email}`;
   }
 }
