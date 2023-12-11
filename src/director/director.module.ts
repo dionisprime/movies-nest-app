@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MovieService } from './movie.service';
-import { MovieController } from './movie.controller';
+import { DirectorService } from './director.service';
+import { DirectorController } from './director.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Movie, MovieSchema } from './movie.schema';
+import { Director, DirectorSchema } from './director.schema';
 import { AuthService } from 'src/auth/auth.service';
-import { AuthController } from 'src/auth/auth.controller';
 import { User, UserSchema } from 'src/user/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -13,12 +12,12 @@ import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: Movie.name, schema: MovieSchema },
+      { name: Director.name, schema: DirectorSchema },
       { name: User.name, schema: UserSchema },
       { name: Playlist.name, schema: PlaylistSchema },
     ]),
   ],
-  controllers: [MovieController, AuthController],
-  providers: [MovieService, AuthService, JwtService, ConfigService],
+  controllers: [DirectorController],
+  providers: [DirectorService, AuthService, JwtService, ConfigService],
 })
-export class MovieModule {}
+export class DirectorModule {}
