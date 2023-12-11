@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { PlaylistModule } from './playlist/playlist.module';
 import { ReportModule } from './report/report.module';
+import { ConfigService } from '@nestjs/config';
 
 const globalGuard = {
   provide: APP_GUARD,
@@ -21,10 +22,13 @@ const globalGuard = {
 @Module({
   imports: [
     MovieModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://dionisprime:moviesdbpass@cluster0.fsgjehv.mongodb.net/movies-app-db',
-    ),
-    // MongooseModule.forRoot('mongodb://127.0.0.1:27017/movies-app-db'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DB_CONNECTION_URL'),
+      }),
+      inject: [ConfigService],
+    }),
     GenreModule,
     DirectorModule,
     UserModule,
