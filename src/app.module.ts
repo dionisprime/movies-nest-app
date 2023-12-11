@@ -21,7 +21,10 @@ const globalGuard = {
 @Module({
   imports: [
     MovieModule,
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/movies-app-db'),
+    MongooseModule.forRoot(
+      'mongodb+srv://dionisprime:moviesdbpass@cluster0.fsgjehv.mongodb.net/movies-app-db',
+    ),
+    // MongooseModule.forRoot('mongodb://127.0.0.1:27017/movies-app-db'),
     GenreModule,
     DirectorModule,
     UserModule,
