@@ -10,6 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -22,7 +23,14 @@ import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
     PassportModule,
     JwtModule,
   ],
-  providers: [AuthService, JwtService, JwtStrategy, ConfigService, UserService],
+  providers: [
+    AuthService,
+    JwtService,
+    JwtStrategy,
+    ConfigService,
+    UserService,
+    MailService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

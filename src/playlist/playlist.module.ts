@@ -7,6 +7,8 @@ import { User, UserSchema } from '../user/user.schema';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from 'src/user/user.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -16,6 +18,13 @@ import { ConfigService } from '@nestjs/config';
     ]),
   ],
   controllers: [PlaylistController],
-  providers: [PlaylistService, AuthService, JwtService, ConfigService],
+  providers: [
+    PlaylistService,
+    AuthService,
+    JwtService,
+    ConfigService,
+    UserService,
+    MailService,
+  ],
 })
 export class PlaylistModule {}

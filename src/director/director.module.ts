@@ -8,6 +8,8 @@ import { User, UserSchema } from 'src/user/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
+import { UserService } from 'src/user/user.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -18,6 +20,13 @@ import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
     ]),
   ],
   controllers: [DirectorController],
-  providers: [DirectorService, AuthService, JwtService, ConfigService],
+  providers: [
+    DirectorService,
+    AuthService,
+    JwtService,
+    ConfigService,
+    UserService,
+    MailService,
+  ],
 })
 export class DirectorModule {}
