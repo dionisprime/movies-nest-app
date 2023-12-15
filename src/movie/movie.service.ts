@@ -5,6 +5,9 @@ import { Movie, MovieDocument } from './movie.schema';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { ERROR_MESSAGE } from '../../utils/constants';
+import * as NodeCache from 'node-cache';
+
+const movieCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 
 @Injectable()
 export class MovieService {
@@ -14,11 +17,24 @@ export class MovieService {
 
   async create(createMovieDto: CreateMovieDto): Promise<Movie> {
     const createdMovie = new this.movieModel(createMovieDto);
-    return createdMovie.save();
+    const result = await createdMovie.save();
+    movieCache.del('allMovies');
+    return result;
   }
 
   async findAll(): Promise<Movie[]> {
-    return this.movieModel.find().populate('genre').populate('director').exec();
+    const cachedMovies = movieCache.get('allMovies') as Movie[];
+    if (cachedMovies) {
+      return cachedMovies;
+    }
+
+    const movies = await this.movieModel
+      .find()
+      .populate('genre')
+      .populate('director')
+      .exec();
+    movieCache.set('allMovies', movies);
+    return movies;
   }
 
   findNamesOnly() {
@@ -42,7 +58,9 @@ export class MovieService {
 
     existingMovie.set(updateMovieDto);
 
-    return existingMovie.save();
+    const result = await existingMovie.save();
+    movieCache.del('allMovies');
+    return result;
   }
 
   async remove(_id: string): Promise<Movie> {
@@ -51,7 +69,7 @@ export class MovieService {
     if (!deletedMovie) {
       throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
     }
-
+    movieCache.del('allMovies');
     return deletedMovie;
   }
 
