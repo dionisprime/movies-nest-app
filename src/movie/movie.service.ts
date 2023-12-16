@@ -1,21 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Movie, MovieDocument } from './movie.schema';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { ERROR_MESSAGE } from '../../utils/constants';
 import * as NodeCache from 'node-cache';
-import { PlaylistService } from 'src/playlist/playlist.service';
 
 const movieCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 
 @Injectable()
 export class MovieService {
   constructor(
-    @InjectConnection() private connection: mongoose.Connection,
     @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
-    private readonly playlistService: PlaylistService,
   ) {}
 
   async create(createMovieDto: CreateMovieDto): Promise<Movie> {
@@ -66,29 +63,14 @@ export class MovieService {
     return result;
   }
 
-  async remove(_id: string): Promise<Movie | string> {
-    const session = await this.movieModel.db.startSession();
-    session.startTransaction();
+  async remove(_id: string): Promise<Movie> {
+    const deletedMovie = await this.movieModel.findByIdAndDelete(_id);
 
-    try {
-      const deletedMovie = await this.movieModel.findByIdAndDelete(_id);
-
-      if (!deletedMovie) {
-        throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
-      }
-
-      await this.playlistService.removeMovieFromAllPlaylists(_id, session);
-
-      await session.commitTransaction();
-
-      movieCache.del('allMovies');
-      return `Фильм ${deletedMovie} удален из базы и плейлистов`;
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      session.endSession();
+    if (!deletedMovie) {
+      throw new NotFoundException(ERROR_MESSAGE.MOVIE_NOT_FOUND);
     }
+    movieCache.del('allMovies');
+    return deletedMovie;
   }
 
   async countMovies() {

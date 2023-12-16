@@ -14,12 +14,17 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PlaylistService } from 'src/playlist/playlist.service';
+import mongoose from 'mongoose';
+import { InjectConnection } from '@nestjs/mongoose';
 
 @ApiTags('movie')
 @ApiBearerAuth()
 @Controller('movie')
 export class MovieController {
   constructor(
+    @InjectConnection() private connection: mongoose.Connection,
+    private readonly playlistService: PlaylistService,
     private readonly movieService: MovieService,
     private readonly authService: AuthService,
   ) {}
@@ -64,6 +69,19 @@ export class MovieController {
     @Headers('Authorization') authorizationHeader: string,
   ) {
     await this.authService.isAdmin(authorizationHeader);
-    return this.movieService.remove(_id);
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+      const deletedMovie = await this.movieService.remove(_id);
+      await this.playlistService.removeMovieFromAllPlaylists(_id, session);
+      await session.commitTransaction();
+      return `Фильм ${deletedMovie} удален из базы и плейлистов`;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 }
