@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Playlist, PlaylistDocument } from './playlist.schema';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
@@ -135,6 +135,17 @@ export class PlaylistService {
     const deletedPlaylist = await this.playlistModel.findByIdAndDelete(id);
 
     return deletedPlaylist;
+  }
+
+  async removeMovieFromAllPlaylists(
+    _id: string,
+    session: mongoose.mongo.ClientSession,
+  ) {
+    return await this.playlistModel.updateMany(
+      {},
+      { $pull: { movies: _id } },
+      { session, new: true },
+    );
   }
 
   async countPlaylists() {

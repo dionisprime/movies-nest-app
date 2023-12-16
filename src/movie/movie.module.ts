@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
 import { MailService } from 'src/mail/mail.service';
 import { UserService } from 'src/user/user.service';
+import { PlaylistService } from 'src/playlist/playlist.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UserService } from 'src/user/user.service';
     ConfigService,
     MailService,
     UserService,
+    PlaylistService,
   ],
 })
 export class MovieModule {}
