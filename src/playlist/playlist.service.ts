@@ -141,11 +141,12 @@ export class PlaylistService {
     _id: string,
     session: mongoose.mongo.ClientSession,
   ) {
-    return await this.playlistModel.updateMany(
-      {},
+    const playlists = await this.playlistModel.updateMany(
+      { movies: _id },
       { $pull: { movies: _id } },
       { session, new: true },
     );
+    return playlists;
   }
 
   async countPlaylists() {
