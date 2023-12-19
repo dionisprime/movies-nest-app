@@ -28,8 +28,7 @@ export class UserController {
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const token = await this.authService.generateToken(createUserDto.email);
-    return this.userService.create(createUserDto, token);
+    return this.userService.create(createUserDto);
   }
 
   @Get('/me')

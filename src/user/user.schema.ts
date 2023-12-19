@@ -19,7 +19,7 @@ export class User {
   roles: string[];
 
   @Prop()
-  token: string;
+  token?: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }] })
   playlists: string[];

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Headers,
+  Req,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -17,6 +18,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PlaylistService } from 'src/playlist/playlist.service';
 import mongoose from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
+import { UserDocument } from 'src/user/user.schema';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
+import { Permissions } from '../enums/permissions.enum';
 
 @ApiTags('movie')
 @ApiBearerAuth()
@@ -32,9 +37,11 @@ export class MovieController {
   @Post()
   async create(
     @Body() createMovieDto: CreateMovieDto,
-    @Headers('Authorization') authorizationHeader: string,
+    @Req() req: Request & { user: UserDocument },
   ) {
-    await this.authService.isAdmin(authorizationHeader);
+    const { user } = req;
+    console.log('user: ', user);
+    this.authService.checkPermission(user, Permissions.MANAGE_REVIEWS);
     return this.movieService.create(createMovieDto);
   }
 
@@ -54,21 +61,17 @@ export class MovieController {
   }
 
   @Patch(':_id')
+  @Roles(Role.Admin)
   async update(
     @Param('_id') _id: string,
     @Body() updateMovieDto: UpdateMovieDto,
-    @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.authService.isAdmin(authorizationHeader);
     return this.movieService.update(_id, updateMovieDto);
   }
 
   @Delete(':_id')
-  async remove(
-    @Param('_id') _id: string,
-    @Headers('Authorization') authorizationHeader: string,
-  ) {
-    await this.authService.isAdmin(authorizationHeader);
+  @Roles(Role.Admin)
+  async remove(@Param('_id') _id: string) {
     const session = await this.connection.startSession();
     session.startTransaction();
 

@@ -14,17 +14,13 @@ import { ERROR_MESSAGE } from '../../utils/constants';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto, token: string): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const { email } = createUserDto;
     const existingUser = await this.userModel.findOne({ email }).exec();
     if (existingUser) {
       throw new ConflictException(ERROR_MESSAGE.USER_ALREADY_EXIST);
     }
-
-    const createdUser = new this.userModel({
-      ...createUserDto,
-      token,
-    });
+    const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
 
@@ -40,7 +36,7 @@ export class UserService {
     return user;
   }
 
-  findByEmail(email: string): Promise<User | null> {
+  findByEmail(email: string) {
     const user = this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);

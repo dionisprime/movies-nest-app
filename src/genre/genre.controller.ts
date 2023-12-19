@@ -14,6 +14,8 @@ import { UpdateGenreDto } from './dto/update-genre.dto';
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../decorators/public.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
 
 @ApiTags('genre')
 @ApiBearerAuth()
@@ -25,11 +27,8 @@ export class GenreController {
   ) {}
 
   @Post()
-  async create(
-    @Body() createGenreDto: CreateGenreDto,
-    @Headers('Authorization') authorizationHeader: string,
-  ) {
-    await this.authService.isAdmin(authorizationHeader);
+  @Roles(Role.Admin)
+  async create(@Body() createGenreDto: CreateGenreDto) {
     return this.genreService.create(createGenreDto);
   }
 
@@ -49,21 +48,17 @@ export class GenreController {
   }
 
   @Patch(':_id')
+  @Roles(Role.Admin)
   async update(
     @Param('_id') _id: string,
     @Body() updateGenreDto: UpdateGenreDto,
-    @Headers('Authorization') authorizationHeader: string,
   ) {
-    await this.authService.isAdmin(authorizationHeader);
     return this.genreService.update(_id, updateGenreDto);
   }
 
   @Delete(':_id')
-  async remove(
-    @Param('_id') _id: string,
-    @Headers('Authorization') authorizationHeader: string,
-  ) {
-    await this.authService.isAdmin(authorizationHeader);
+  @Roles(Role.Admin)
+  async remove(@Param('_id') _id: string) {
     return this.genreService.remove(_id);
   }
 }

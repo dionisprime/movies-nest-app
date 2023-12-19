@@ -14,10 +14,16 @@ import { PlaylistModule } from './playlist/playlist.module';
 import { ReportModule } from './report/report.module';
 import { ConfigService } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 const globalGuard = {
   provide: APP_GUARD,
   useClass: JwtGuard,
+};
+
+const rolesGuard = {
+  provide: APP_GUARD,
+  useClass: RolesGuard,
 };
 
 @Module({
@@ -40,6 +46,6 @@ const globalGuard = {
     MailModule,
   ],
   controllers: [AppController],
-  providers: [AppService, globalGuard],
+  providers: [AppService, globalGuard, rolesGuard],
 })
 export class AppModule {}

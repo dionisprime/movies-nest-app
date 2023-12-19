@@ -11,8 +11,11 @@ import { ERROR_MESSAGE, ROLES } from '../../utils/constants';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Playlist, PlaylistDocument } from '../playlist/playlist.schema';
-import { UserService } from 'src/user/user.service';
-import { MailService } from 'src/mail/mail.service';
+import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
+import { RolePermissions } from '../enums/rolePermissions.enum';
+import { Permissions } from '../enums/permissions.enum';
+import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,15 +28,49 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async generateToken(email: string) {
-    const secret = this.configService.get<string>('JWT_SECRET');
+  async login(authDto: AuthDto): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ email: authDto.email }).exec();
+    if (!user) throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    if (user.password !== authDto.password)
+      throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
+    return user;
+  }
+
+  async generateToken(_id: string, email: string, roles: string[]) {
+    const secret = this.configService.get('JWT_SECRET');
 
     if (!secret) {
       throw new UnauthorizedException('JWT secret is not configured');
     }
 
-    const token = this.jwtService.sign({ email }, { secret });
+    const token = this.jwtService.sign({ _id, email, roles }, { secret });
     return token;
+  }
+
+  async sendMagicLink(email: string) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const clientUrl = this.configService.get('CLIENT_URL');
+
+    const token = this.generateToken(
+      user._id.toString(),
+      user.email,
+      user.roles,
+    );
+
+    const link = `${clientUrl}/auth/${token}`;
+    const html = `<p><a href="${link}">Войти в аккаунт</a></p>`;
+
+    this.mailService.sendMessage({
+      email: user.email,
+      subject: 'Волшебная ссылка для входа',
+      html,
+    });
+    return `Ссылка отправлена на почту ${email}`;
   }
 
   async authenticate(email: string, password: string) {
@@ -103,22 +140,12 @@ export class AuthService {
     return isPlaylistOwner;
   }
 
-  async sendMagicLink(email: string) {
-    const user = await this.userService.findByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
-    }
-
-    const clientUrl = this.configService.get('CLIENT_URL');
-    const link = `${clientUrl}/auth/${user.token}`;
-    const html = `<p><a href="${link}">Войти в аккаунт</a></p>`;
-
-    this.mailService.sendMessage({
-      email: user.email,
-      subject: 'Волшебная ссылка для входа',
-      html,
-    });
-    return `Ссылка отправлена на почту ${email}`;
+  checkPermission(user: UserDocument, permission: Permissions) {
+    const hasPermission = user.roles.some((role) =>
+      RolePermissions[role].includes(permission),
+    );
+    if (!hasPermission)
+      throw new ForbiddenException(ERROR_MESSAGE.NO_PERMISSIONS);
+    return hasPermission;
   }
 }
