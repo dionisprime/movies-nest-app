@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
   Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -15,6 +16,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
 import { Public } from '../decorators/public.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -29,6 +31,20 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Public()
+  @Get('export/json')
+  async exportUsersJson(@Res() response: Response) {
+    const users = await this.userService.findAll();
+    const fileName = 'users.json';
+
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${fileName}`,
+    );
+    response.send(JSON.stringify(users));
   }
 
   @Get('/me')
