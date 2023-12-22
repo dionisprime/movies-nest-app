@@ -7,6 +7,7 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { ERROR_MESSAGE } from '../../utils/constants';
 import * as NodeCache from 'node-cache';
 import * as fastcsv from 'fast-csv';
+// import { writeToString } from 'fast-csv';
 
 const movieCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 
@@ -87,6 +88,7 @@ export class MovieService {
       const csvData = await fastcsv.writeToString(movies, { headers: true });
 
       return csvData;
+      // return writeToString(movies, { headers: true });
     }
   }
 }
