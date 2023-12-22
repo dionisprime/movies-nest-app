@@ -45,6 +45,12 @@ export class MovieController {
     return this.movieService.create(createMovieDto);
   }
 
+  @Get('export/:format')
+  async exportMovies(@Param('format') format: 'json' | 'csv') {
+    const data = await this.movieService.exportMovies(format);
+    return { data };
+  }
+
   @Public()
   @Get()
   findAll(@Headers('Authorization') authorizationHeader: string) {
