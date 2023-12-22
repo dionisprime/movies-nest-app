@@ -56,17 +56,20 @@ export class MovieController {
   @Get('export/:format')
   async exportData(
     @Res() res: Response,
-    response: Response,
     @Param('format') format: 'json' | 'csv',
+    @Res() response: Response,
   ) {
     const movies = await this.movieService.findAll();
     if (format === 'csv') {
-      const fileName = 'movies.csv';
       const ws = fs.createWriteStream('movies.csv');
+      const fileName = 'movies.csv';
       csv.writeToStream(ws, movies, { headers: true });
-      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-      res.setHeader('Content-Type', 'text/csv');
-      res.send(movies);
+      response.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${fileName}`,
+      );
+      response.setHeader('Content-Type', 'text/csv');
+      response.send(movies);
     }
     if (format === 'json' || format === undefined) {
       const dataString = JSON.stringify(movies);
@@ -74,8 +77,11 @@ export class MovieController {
       const filePath = path.join(__dirname, '../../', 'films.json');
       await fs.promises.writeFile(filePath, dataString, 'utf8');
 
-      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-      res.setHeader('Content-Type', 'application/json');
+      response.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${fileName}`,
+      );
+      response.setHeader('Content-Type', 'application/json');
       // res.send(dataString);
       response.sendFile(filePath);
     }
