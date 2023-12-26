@@ -43,7 +43,7 @@ describe('MovieService', () => {
   });
 
   afterEach(async () => {
-    // const movieModel = module.get('MovieModel');
-    // await movieModel.deleteMany({});
+    const movieModel = module.get('MovieModel');
+    await movieModel.deleteMany({});
   });
 });
