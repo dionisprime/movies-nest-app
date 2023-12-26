@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MovieService } from './movie.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Movie, MovieSchema } from './movie.schema';
+import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
+import { User, UserSchema } from '../user/user.schema';
 
 describe('MovieService', () => {
   let service: MovieService;
@@ -11,9 +14,12 @@ describe('MovieService', () => {
     module = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot('mongodb://127.0.0.1:27017/movies-app-test-db'),
-        MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
+        MongooseModule.forFeature([
+          { name: Movie.name, schema: MovieSchema },
+          { name: User.name, schema: UserSchema },
+        ]),
       ],
-      providers: [MovieService],
+      providers: [MovieService, UserService, MailService],
     }).compile();
 
     service = module.get<MovieService>(MovieService);
@@ -25,7 +31,7 @@ describe('MovieService', () => {
       description: 'Excellent',
       year: 2022,
       duration: 123,
-      genre: '65633f3766fbc04c023dc83f',
+      genre: ['65633f3766fbc04c023dc83f'],
       director: '656353fd4e8227136c61cc96',
     };
     const createdMovie = await service.create(createMovieDto);
@@ -37,7 +43,7 @@ describe('MovieService', () => {
   });
 
   afterEach(async () => {
-    const movieModel = module.get('MovieModel');
-    await movieModel.deleteMany({});
+    // const movieModel = module.get('MovieModel');
+    // await movieModel.deleteMany({});
   });
 });

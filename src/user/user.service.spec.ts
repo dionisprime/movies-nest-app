@@ -23,6 +23,8 @@ describe('UserService', () => {
     const createUserDto = {
       username: 'Example User',
       email: 'example@mail.com',
+      password: 'test',
+      roles: ['user'],
     };
     const createdUser = await service.create(createUserDto);
 

@@ -12,7 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { PlaylistModule } from './playlist/playlist.module';
 import { ReportModule } from './report/report.module';
-import { ConfigService } from '@nestjs/config';
+import { DB_CONNECTION_URL } from '../utils/config';
 import { MailModule } from './mail/mail.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -29,13 +29,7 @@ const rolesGuard = {
 @Module({
   imports: [
     MovieModule,
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DB_CONNECTION_URL'),
-      }),
-      inject: [ConfigService],
-    }),
+    MongooseModule.forRoot(DB_CONNECTION_URL),
     GenreModule,
     DirectorModule,
     UserModule,

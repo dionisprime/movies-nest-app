@@ -12,10 +12,10 @@ import {
 import { PlaylistService } from './playlist.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
-import { Public } from 'src/decorators/public.decorator';
+import { Public } from '../decorators/public.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { UserDocument } from 'src/user/user.schema';
+import { UserDocument } from '../user/user.schema';
 
 @ApiTags('playlist')
 @ApiBearerAuth()

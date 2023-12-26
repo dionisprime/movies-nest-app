@@ -31,6 +31,12 @@ describe('DirectorService', () => {
     expect(createdDirector).toBeDefined();
     expect(createdDirector.directorName).toEqual('Example Director');
   });
+
+  it('should return all directors', async () => {
+    const directors = await service.findAll();
+    expect(directors).toBeInstanceOf(Array);
+  });
+
   afterEach(async () => {
     const directorModel = module.get('DirectorModel');
     await directorModel.deleteMany({});

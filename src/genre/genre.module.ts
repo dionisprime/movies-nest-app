@@ -3,13 +3,13 @@ import { GenreService } from './genre.service';
 import { GenreController } from './genre.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Genre, GenreSchema } from './genre.schema';
-import { AuthService } from 'src/auth/auth.service';
-import { User, UserSchema } from 'src/user/user.schema';
+import { AuthService } from '../auth/auth.service';
+import { User, UserSchema } from '../user/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Playlist, PlaylistSchema } from '../playlist/playlist.schema';
-import { UserService } from 'src/user/user.service';
-import { MailService } from 'src/mail/mail.service';
+import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [

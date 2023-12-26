@@ -21,7 +21,10 @@ export class User {
   @Prop()
   token?: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }],
+    default: [],
+  })
   playlists: string[];
 
   @Prop({ default: false })

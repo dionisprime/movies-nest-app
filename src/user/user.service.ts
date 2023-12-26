@@ -74,14 +74,14 @@ export class UserService {
       throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
     }
 
-    const playlistIndex = user.playlists.indexOf(playlistId);
+    const playlistIndex = user.playlists?.indexOf(playlistId);
 
     if (playlistIndex === -1) {
       throw new NotFoundException(ERROR_MESSAGE.PLAYLIST_NOT_FOUND);
     }
 
     if (playlistIndex > -1) {
-      user.playlists.splice(playlistIndex, 1);
+      user.playlists?.splice(playlistIndex, 1);
       await user.save();
     }
 
