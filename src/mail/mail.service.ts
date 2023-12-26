@@ -24,4 +24,18 @@ export class MailService {
       html,
     });
   }
+
+  async sendNewReleaseNotification(
+    email: string,
+    movieDetails: any,
+  ): Promise<void> {
+    const mailOptions = {
+      from: FROM_EMAIL,
+      to: email,
+      subject: `Вышел новый фильм: ${movieDetails.title}`,
+      text: `Обязательно посмотрите: ${movieDetails.title}, ${movieDetails.description}`,
+    };
+
+    await this.client.sendMail(mailOptions);
+  }
 }

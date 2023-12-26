@@ -6,6 +6,8 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { ERROR_MESSAGE } from '../../utils/constants';
 import * as NodeCache from 'node-cache';
+import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
 
 const movieCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 
@@ -13,11 +15,20 @@ const movieCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 export class MovieService {
   constructor(
     @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
+    private userService: UserService,
+    private mailService: MailService,
   ) {}
 
   async create(createMovieDto: CreateMovieDto): Promise<Movie> {
     const createdMovie = new this.movieModel(createMovieDto);
     const result = await createdMovie.save();
+
+    const subscribers = await this.userService.getSubscribers();
+    console.log('subscribers: ', subscribers);
+    subscribers.forEach((subscriber) => {
+      this.mailService.sendNewReleaseNotification(subscriber.email, result);
+    });
+
     movieCache.del('allMovies');
     return result;
   }

@@ -91,4 +91,26 @@ export class UserService {
   async countUsers() {
     return this.userModel.countDocuments().exec();
   }
+
+  async subscribeToNotifications(userId: string): Promise<User> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+    user.isSubscribedToNotifications = true;
+    return user.save();
+  }
+
+  async unsubscribeFromNotifications(userId: string): Promise<User> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGE.USER_NOT_FOUND);
+    }
+    user.isSubscribedToNotifications = false;
+    return user.save();
+  }
+
+  async getSubscribers(): Promise<User[]> {
+    return this.userModel.find({ isSubscribedToNotifications: true }).exec();
+  }
 }

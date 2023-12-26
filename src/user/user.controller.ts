@@ -76,6 +76,16 @@ export class UserController {
     return this.userService.removePlaylistFromUser(userId, playlistId);
   }
 
+  @Patch(':userId/subscribe')
+  async subscribeToNotifications(@Param('userId') userId: string) {
+    return this.userService.subscribeToNotifications(userId);
+  }
+
+  @Patch(':userId/unsubscribe')
+  async unsubscribeFromNotifications(@Param('userId') userId: string) {
+    return this.userService.unsubscribeFromNotifications(userId);
+  }
+
   @Delete(':_id')
   remove(@Param('_id') _id: string) {
     return this.userService.remove(_id);

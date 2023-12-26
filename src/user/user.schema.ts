@@ -23,6 +23,9 @@ export class User {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }] })
   playlists: string[];
+
+  @Prop({ default: false })
+  isSubscribedToNotifications: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
